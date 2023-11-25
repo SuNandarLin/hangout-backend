@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// prisma/schema.prisma
+
+model Activity {
+  id              Int      @id @default(autoincrement())
+  name            String
+  locations       Location_Activity[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Location {
+  id              Int      @id @default(autoincrement())
+  name            String
+  postal_code     BigInt
+  latitude        String
+  longitude       String
+  activities      Location_Activity[]
+  events          Event[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Location_Activity {
+  id              Int      @id @default(autoincrement())
+  location        Location? @relation(fields: [location_id], references: [id])
+  location_id     Int
+  activity        Activity? @relation(fields: [activity_id], references: [id])
+  activity_id     Int
+}
+
+model Event {
+  id              Int      @id @default(autoincrement())
+  name            String   
+  description     String?
+  eventDateTime   DateTime @default(now())
+  location        Location? @relation(fields: [location_id], references: [id])
+  location_id     Int
+  users           User_Event[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model User {
+  id              Int      @id @default(autoincrement())
+  name            String
+  phone           String
+  events          User_Event[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model User_Event {
+  id          Int      @id @default(autoincrement())
+  user        User? @relation(fields: [user_id], references: [id])
+  user_id     Int
+  event       Event? @relation(fields: [event_id], references: [id])
+  event_id    Int
+}
+
